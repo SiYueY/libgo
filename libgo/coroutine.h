@@ -18,20 +18,26 @@
 #include "debug/debugger.h"
 //#include "netio/unix/errno_hook.h"
 
+/* libgo 版本 */
 #define LIBGO_VERSION 300
 
+/* 协程 */
 #define go_alias ::co::__go(__FILE__, __LINE__)-
 #define go go_alias
 
 // create coroutine options
+/* 协程栈 */
 #define co_stack(size) ::co::__go_option<::co::opt_stack_size>{size}-
+/* 协程调度器 */
 #define co_scheduler(pScheduler) ::co::__go_option<::co::opt_scheduler>{pScheduler}-
 
+/* 协程选项 */
 #define go_stack(size) go co_stack(size)
 
 #define co_yield do { ::co::Processer::StaticCoYield(); } while (0)
 
 // coroutine sleep, never blocks current thread if run in coroutine.
+/* 协程休眠 */
 #if defined(LIBGO_SYS_Unix)
 # define co_sleep(milliseconds) do { usleep(1000 * milliseconds); } while (0)
 #else

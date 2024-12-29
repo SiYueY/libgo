@@ -22,6 +22,7 @@ class Processer
     friend class Scheduler;
 
 private:
+    /* 调度器 Scheduler */
     Scheduler * scheduler_;
 
     // 线程ID

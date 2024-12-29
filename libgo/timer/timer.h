@@ -16,9 +16,11 @@ public:
     typedef ::libgo::RoutineSyncTimerT<::libgo::Mutex, ::libgo::ConditionVariable> CoroutineTimer;
     typedef CoroutineTimer::func_type func_t;
 
+    /* TimerId实现 */
     struct TimerIdImpl
     {
     public:
+        /* 构造函数 */
         explicit TimerIdImpl(std::shared_ptr<CoroutineTimer> const& timer) : timer_(timer) {}
 
         bool join_unschedule()

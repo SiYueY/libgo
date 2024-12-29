@@ -71,6 +71,7 @@ Scheduler::~Scheduler()
     Stop();
 }
 
+/* 创建任务 */
 void Scheduler::CreateTask(TaskF const& fn, TaskOpt const& opt)
 {
     Task* tk = new Task(fn, opt.stack_size_ ? opt.stack_size_ : CoroutineOptions::getInstance().stack_size);
@@ -108,20 +109,24 @@ bool Scheduler::IsEmpty()
     return taskCount_ == 0;
 }
 
+/* 启动调度器 Scheduler */
 void Scheduler::Start(int minThreadNumber, int maxThreadNumber)
 {
     if (!started_.try_lock())
         throw std::logic_error("libgo repeated call Scheduler::Start");
 
+    /* 若minThreadNumber<1,则设置为CPU核数 */
     if (minThreadNumber < 1)
        minThreadNumber = std::thread::hardware_concurrency();
 
+    /* 若m axThreadNumber<=0 或 maxThreadNumber<minThreadNumber,则设置为 minThreadNumber */
     if (maxThreadNumber == 0 || maxThreadNumber < minThreadNumber)
         maxThreadNumber = minThreadNumber;
 
     minThreadNumber_ = minThreadNumber;
     maxThreadNumber_ = maxThreadNumber;
 
+    /* 逻辑处理器 Processer */
     auto mainProc = processers_[0];
 
     for (int i = 0; i < minThreadNumber_ - 1; i++) {

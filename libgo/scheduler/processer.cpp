@@ -17,6 +17,7 @@ Processer::Processer(Scheduler * scheduler, int id)
 
 Processer* & Processer::GetCurrentProcesser()
 {
+    /* 静态线程局部变量 Processer 逻辑处理器 */
     static thread_local Processer *proc = nullptr;
     return proc;
 }

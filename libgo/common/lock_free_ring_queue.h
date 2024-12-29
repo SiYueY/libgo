@@ -9,7 +9,7 @@ struct LockFreeResult {
     bool notify = false;
 };
 
-// 无锁环形队列
+// 无锁环形队列 RingQueue
 template <typename T, typename SizeType = size_t>
 class LockFreeRingQueue
 {
@@ -18,6 +18,7 @@ public:
     typedef std::atomic<uint_t> atomic_t;
 
     // 多申请一个typename T的空间, 便于判断full和empty.
+    /* 构造函数 */
     explicit LockFreeRingQueue(uint_t capacity)
         : capacity_(reCapacity(capacity))
         , readable_{0}
@@ -25,11 +26,13 @@ public:
         , read_{0}
         , writable_{uint_t(capacity_ - 1)}
     {
+        /* 申请空间 */
         buffer_ = (T*)malloc(sizeof(T) * capacity_);
     }
 
+    /* 析构函数 */
     ~LockFreeRingQueue() {
-        // destory elements.
+        // destory elements. 销毁元素
         uint_t read = consume(read_);
         uint_t readable = consume(readable_);
         for (; read < readable; ++read) {
@@ -39,6 +42,7 @@ public:
         free(buffer_);
     }
 
+    /* 入队 */
     template <typename U>
     LockFreeResult Push(U && t) {
         LockFreeResult result;
@@ -70,6 +74,7 @@ public:
         return result;
     }
 
+    /* 出队 */
     LockFreeResult Pop(T & t) {
         LockFreeResult result;
 
@@ -102,28 +107,35 @@ public:
     }
 
 private:
+    /* 内存次序memory_order_relaxed */
     inline uint_t relaxed(atomic_t & val) {
         return val.load(std::memory_order_relaxed);
     }
 
+    /* 内存次序memory_order_acquire */
     inline uint_t acquire(atomic_t & val) {
         return val.load(std::memory_order_acquire);
     }
 
+    /* 内存次序memory_order_release */
     inline uint_t consume(atomic_t & val) {
         return val.load(std::memory_order_consume);
     }
 
+    /* 取模 */
     inline uint_t mod(uint_t val) {
         return val % capacity_;
     }
 
+    /* 重新计算容量 */
     inline size_t reCapacity(uint_t capacity) {
         return (size_t)capacity + 1;
     }
 
 private:
+    /* 容量 */
     size_t capacity_;
+    /* 环形队列缓冲区 */
     T* buffer_;
 
     // [write_, writable_] 可写区间, write_ == writable_ is full.

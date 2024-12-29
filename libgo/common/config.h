@@ -41,12 +41,14 @@
 # define thread_local __declspec(thread)
 #endif
 
+/* 强制内联 */
 #if defined(__GNUC__) && (__GNUC__ > 3 ||(__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
-# define ALWAYS_INLINE __attribute__ ((always_inline)) inline 
+# define ALWAYS_INLINE __attribute__ ((always_inline)) inline
 #else
 # define ALWAYS_INLINE inline
 #endif
 
+/* 分支预测优化 */
 #if defined(LIBGO_SYS_Unix)
 # define LIKELY(x) __builtin_expect(!!(x), 1)
 # define UNLIKELY(x) __builtin_expect(!!(x), 0)
@@ -90,6 +92,7 @@ template <typename T>
 using atomic_t = std::atomic<T>;
 
 ///---- debugger flags
+/* Debug 标识 */
 static const uint64_t dbg_none              = 0;
 static const uint64_t dbg_all               = ~(uint64_t)0;
 static const uint64_t dbg_hook              = 0x1;

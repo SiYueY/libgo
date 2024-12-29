@@ -36,26 +36,33 @@ struct Deleter
     inline void operator()(RefObject* ptr);
 };
 
+/* 引用计数对象基类 */
 struct RefObject
 {
     atomic_t<long>* reference_;
     atomic_t<long> referenceImpl_;
     Deleter deleter_;
 
+    /* 构造函数 */
     RefObject() : referenceImpl_{1} {
         reference_ = &referenceImpl_;
     }
+
+    /* 析构函数 */
     virtual ~RefObject() {}
 
+    /* 是否共享 */
     bool IsShared() const {
         return reference_ != &referenceImpl_;
     }
 
+    /* 增加引用计数 */
     void IncrementRef()
     {
         ++*reference_;
     }
 
+    /* 减少引用计数 */
     virtual bool DecrementRef()
     {
         if (--*reference_ == 0) {
@@ -65,14 +72,17 @@ struct RefObject
         return false;
     }
 
+    /* 引用计数 */
     long use_count() {
         return *reference_;
     }
 
+    /* 设置自定义删除器 */
     void SetDeleter(Deleter d) {
         deleter_ = d;
     }
 
+    /* 禁止拷贝构造函数和赋值运算符 */
     RefObject(RefObject const&) = delete;
     RefObject& operator=(RefObject const&) = delete;
 };

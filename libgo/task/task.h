@@ -9,6 +9,7 @@
 namespace co
 {
 
+/* 任务状态 */
 enum class TaskState
 {
     runnable,
@@ -16,6 +17,7 @@ enum class TaskState
     done,
 };
 
+/* 获取任务状态的名称 */
 const char* GetTaskStateName(TaskState state);
 
 typedef std::function<void()> TaskF;
@@ -23,6 +25,7 @@ typedef std::function<void()> TaskF;
 struct TaskGroupKey {};
 typedef Anys<TaskGroupKey> TaskAnys;
 
+/* Processer 逻辑处理器 */
 class Processer;
 
 struct Task

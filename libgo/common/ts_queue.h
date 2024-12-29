@@ -6,13 +6,15 @@
 namespace co
 {
 
-// 侵入式数据结构Hook基类
+// 侵入式数据结构 Hook 基类
 struct TSQueueHook
 {
+    /* prev, next 指针, 用于双向链表 */
     TSQueueHook* prev = nullptr;
     TSQueueHook* next = nullptr;
     void *check_ = nullptr;
 
+    /* 添加节点 */
     ALWAYS_INLINE void link(TSQueueHook* theNext) {
         assert(next == nullptr);
         assert(theNext->prev == nullptr);
@@ -20,6 +22,7 @@ struct TSQueueHook
         theNext->prev = this;
     }
 
+    /* 移除节点 */
     ALWAYS_INLINE void unlink(TSQueueHook* theNext) {
         assert(next == theNext);
         assert(theNext->prev == this);
